@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Band Board Jam | Reh Dogg Games Plus</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      user-select: none;
+    }
+
+    body {
+      background: radial-gradient(circle at 20% 30%, #0a0f1a, #03060c);
+      font-family: 'Courier New', 'Fira Code', 'Press Start 2P', 'Segoe UI', monospace;
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 1.5rem;
+      position: relative;
+    }
+    /* scanline effect */
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: repeating-linear-gradient(0deg, rgba(0,255,255,0.03) 0px, rgba(0,255,255,0.03) 2px, transparent 2px, transparent 6px);
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    /* arcade cabinet container */
+    .arcade-machine {
+      max-width: 1300px;
+      width: 100%;
+      background: #0a0e17cc;
+      backdrop-filter: blur(2px);
+      border-radius: 3rem;
+      padding: 2rem 1.5rem;
+      border: 3px solid #ff44cc;
+      box-shadow: 0 0 0 4px #ffaa33, 0 0 0 8px #2a1a3a, inset 0 0 20px rgba(255, 68, 204, 0.3);
+    }
+
+    /* startup screen */
+    .startup-screen {
+      text-align: center;
+      transition: all 0.2s;
+    }
+    .brand-logo {
+      margin-bottom: 2rem;
+    }
+    .brand-logo h1 {
+      font-size: 3rem;
+      background: linear-gradient(135deg, #ff44cc, #ffcc33);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-shadow: 0 0 8px #ff44aa;
+      letter-spacing: 4px;
+      font-weight: 900;
+      margin: 0;
+    }
+    .brand-logo p {
+      color: #0ff;
+      letter-spacing: 2px;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      border-top: 2px solid #ffcc33;
+      display: inline-block;
+      padding-top: 0.5rem;
+    }
+    .game-selector {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 2rem;
+      margin: 3rem 0;
+    }
+    .arcade-btn {
+      background: #11161f;
+      border: 3px solid #ff44cc;
+      border-radius: 2rem;
+      padding: 1.5rem 2rem;
+      width: 240px;
+      cursor: pointer;
+      transition: all 0.1s ease;
+      box-shadow: 0 10px 0 #5a1a4a;
+      text-align: center;
+    }
+    .arcade-btn:active {
+      transform: translateY(4px);
+      box-shadow: 0 4px 0 #5a1a4a;
+    }
+    .arcade-btn h2 {
+      color: #ffdd77;
+      font-size: 1.6rem;
+      margin: 0 0 0.5rem 0;
+      text-shadow: 0 0 5px #ffaa33;
+    }
+    .arcade-btn p {
+      color: #7fdbff;
+      font-size: 0.7rem;
+      margin: 0;
+    }
+    .arcade-btn:hover {
+      background: #1f2a3a;
+      border-color: #ffaa33;
+    }
+    .credits {
+      color: #ffaa88;
+      font-size: 0.7rem;
+      border-top: 1px dashed #ff44cc;
+      padding-top: 1rem;
+      margin-top: 1rem;
+    }
+
+    /* game container (hidden until selected) */
+    .game-container {
+      display: none;
+      animation: fadeIn 0.2s;
+    }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    .game-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+    .back-btn {
+      background: #333c44;
+      border: 2px solid #ffcc55;
+      color: #ffcc55;
+      padding: 0.4rem 1rem;
+      border-radius: 2rem;
+      font-family: monospace;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+    .back-btn:hover {
+      background: #ffcc55;
+      color: #1a1a2a;
+    }
+    .band-tag {
+      background: #ff44cc30;
+      padding: 0.2rem 0.8rem;
+      border-radius: 20px;
+      font-size: 0.7rem;
+    }
+
+    /* game card styling inside container (arcade-glowing) */
+    .game-panel {
+      background: #0f1420cc;
+      border: 2px solid #0ff;
+      border-radius: 2rem;
+      padding: 1.5rem;
+      box-shadow: 0 0 12px cyan;
+    }
+    .reset-btn {
+      background: #ff44cc;
+      border: none;
+      font-family: monospace;
+      font-weight: bold;
+      padding: 8px;
+      border-radius: 40px;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 1rem;
+    }
+    .scrambled-letters, .word-with-blanks {
+      font-size: 2rem;
+      letter-spacing: 6px;
+      background: #00000066;
+      padding: 0.6rem;
+      border-radius: 1rem;
+      text-align: center;
+      font-family: monospace;
+    }
+    .match-card {
+      background: #1e2a32;
+      padding: 8px;
+      border-radius: 1rem;
+      cursor: pointer;
+    }
+    .match-card.selected { background: #ffaa33; color: black; }
+    .match-card.matched { background: #2e6b47; text-decoration: line-through; opacity: 0.6; pointer-events: none; }
+    .options-buttons button {
+      background: #3d5c55;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 30px;
+      font-weight: bold;
+      margin: 4px;
+      cursor: pointer;
+    }
+    footer { text-align: center; font-size: 0.6rem; margin-top: 1rem; color: #aaa; }
+  </style>
+</head>
+<body>
+<div class="arcade-machine">
+  <!-- STARTUP SCREEN (arcade selector) -->
+  <div id="startupScreen" class="startup-screen">
+    <div class="brand-logo">
+      <h1>⚡ BAND BOARD JAM ⚡</h1>
+      <p>🎸 REH DOGG GAMES PLUS 🎸</p>
+    </div>
+    <div class="game-selector">
+      <div class="arcade-btn" data-game="wordtemple">
+        <h2>🍃 WORD TEMPLE</h2>
+        <p>unscramble · Sacred Syllables</p>
+      </div>
+      <div class="arcade-btn" data-game="lexicon">
+        <h2>📖 LEXICON MATCH</h2>
+        <p>word ↔ definition · Lexicon Lords</p>
+      </div>
+      <div class="arcade-btn" data-game="complete">
+        <h2>🔠 WORD COMPLETE</h2>
+        <p>fill missing letters · Vowel Vandals</p>
+      </div>
+    </div>
+    <div class="credits">
+      🕹️ INSERT COIN → CHOOSE GAME → MATCH / UNSCRAMBLE / COMPLETE 🕹️
+    </div>
+  </div>
+
+  <!-- GAME CONTAINERS (hidden by default) -->
+  <div id="gameWordTemple" class="game-container">
+    <div class="game-header">
+      <button class="back-btn" data-back="wordtemple">⬅️ ARCADE MENU</button>
+      <div class="band-tag">🎤 Sacred Syllables live</div>
+    </div>
+    <div class="game-panel">
+      <div class="scrambled-letters" id="scrambledWord">????</div>
+      <div style="display:flex; gap:10px; margin:15px 0;">
+        <input type="text" id="wordGuessInput" placeholder="type word" style="flex:1; padding:10px; border-radius:40px; border:none; text-align:center;">
+        <button id="submitGuess" style="background:#0ff; border:none; border-radius:40px; padding:0 20px;">🎶 Offer</button>
+      </div>
+      <div style="display:flex; justify-content:space-between; font-size:0.8rem;">
+        <span>🐾 Dogg Points: <strong id="zenScore">0</strong></span>
+        <span>📜 #<span id="currentWordIndex">1</span>/<span id="totalWordsCount">0</span></span>
+      </div>
+      <div id="zenFeedback" style="font-size:0.7rem; margin-top:8px;"></div>
+      <button class="reset-btn" id="resetZenGame">⟳ New Temple Cycle</button>
+    </div>
+  </div>
+
+  <div id="gameLexicon" class="game-container">
+    <div class="game-header">
+      <button class="back-btn" data-back="lexicon">⬅️ ARCADE MENU</button>
+      <div class="band-tag">📚 Lexicon Lords</div>
+    </div>
+    <div class="game-panel">
+      <div id="matchGrid" style="display:grid; grid-template-columns:1fr 1fr; gap:12px;"></div>
+      <div id="matchStatus" style="margin:12px 0; font-size:0.7rem; text-align:center;"></div>
+      <button class="reset-btn" id="resetMatchGame">⟳ New Word Set</button>
+    </div>
+  </div>
+
+  <div id="gameComplete" class="game-container">
+    <div class="game-header">
+      <button class="back-btn" data-back="complete">⬅️ ARCADE MENU</button>
+      <div class="band-tag">🎤 Vowel Vandals</div>
+    </div>
+    <div class="game-panel">
+      <div class="word-with-blanks" id="blankWord">_ _ _ _</div>
+      <div id="letterOptions" style="display:flex; flex-wrap:wrap; justify-content:center; gap:10px; margin:20px 0;"></div>
+      <div id="completeFeedback" style="font-size:0.7rem; text-align:center;"></div>
+      <div style="display:flex; justify-content:space-between; font-size:0.7rem; margin:10px 0;">
+        <span>🏆 Streak: <span id="completeStreak">0</span></span>
+        <span>🌟 Total correct: <span id="totalCorrect">0</span></span>
+      </div>
+      <button class="reset-btn" id="resetCompleteGame">⟳ New Word Book</button>
+    </div>
+  </div>
+  <footer>🕹️ BAND BOARD JAM — arcade edition. pick a game, match & spell. 🎙️</footer>
+</div>
+
+<script>
+  // ----------------------------- WORD TEMPLE (unscramble) -------------------------
+  const wordBank = [
+    { word: "SERENITY", hint: "peace" }, { word: "HARMONY", hint: "balance" },
+    { word: "BREATHE", hint: "inhale" }, { word: "CLARITY", hint: "clear vision" },
+    { word: "RHYTHM", hint: "beat pattern" }, { word: "TEMPLE", hint: "sacred place" }
+  ];
+  let currentIdx = 0, doggPoints = 0, currentAnswer = "", currentScrambled = "";
+  function scrambleWord(w) {
+    let a = w.split('');
+    for (let i = a.length-1; i>0; i--) { let j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
+    let s=a.join(''); if(s===w && w.length>2){ let t=s.split(''); [t[0],t[1]]=[t[1],t[0]]; s=t.join(''); }
+    return s.toUpperCase();
+  }
+  function loadWordTemple() {
+    let obj = wordBank[currentIdx % wordBank.length];
+    currentAnswer = obj.word.toUpperCase();
+    currentScrambled = scrambleWord(currentAnswer);
+    document.getElementById("scrambledWord").innerText = currentScrambled;
+    document.getElementById("currentWordIndex").innerText = (currentIdx % wordBank.length)+1;
+    document.getElementById("totalWordsCount").innerText = wordBank.length;
+    document.getElementById("zenFeedback").innerHTML = `🧘 hint: ${obj.hint}`;
+    document.getElementById("wordGuessInput").value = "";
+  }
+  function updateZenScore() { document.getElementById("zenScore").innerText = doggPoints; }
+  function handleGuess() {
+    let guess = document.getElementById("wordGuessInput").value.trim().toUpperCase();
+    if(!guess) { document.getElementById("zenFeedback").innerHTML = "🌀 type a word"; return; }
+    if(guess === currentAnswer) {
+      doggPoints += 10; updateZenScore();
+      document.getElementById("zenFeedback").innerHTML = `✨ correct! +10 points. Next word.`;
+      currentIdx++;
+      if(currentIdx >= wordBank.length) { currentIdx=0; doggPoints+=15; updateZenScore(); document.getElementById("zenFeedback").innerHTML += ` Bonus! Cycle complete.`; }
+      loadWordTemple();
+    } else { document.getElementById("zenFeedback").innerHTML = `❌ "${guess}" wrong. Hint: ${wordBank[currentIdx % wordBank.length].hint}`; }
+    document.getElementById("wordGuessInput").value = "";
+  }
+  function resetWordTemple() { doggPoints=0; currentIdx=0; updateZenScore(); loadWordTemple(); document.getElementById("zenFeedback").innerHTML = "🌸 New cycle"; }
+
+  // ----------------------------- LEXICON MATCH -----------------------------
+  let matchPairs = [
+    { word: "Eloquent", def: "Fluent and persuasive in speaking" },
+    { word: "Mellifluous", def: "Sweet-sounding, flowing" },
+    { word: "Resilient", def: "Able to recover quickly" },
+    { word: "Luminous", def: "Emitting light, glowing" }
+  ];
+  let currentMatchDeck = [], selectedMatchId = null, matchComplete = false;
+  function buildMatchDeck() {
+    let deck = [];
+    matchPairs.forEach((p,idx) => {
+      deck.push({ text: p.word, type: "word", pairId: idx, matched: false });
+      deck.push({ text: p.def, type: "def", pairId: idx, matched: false });
+    });
+    for(let i=deck.length-1;i>0;i--) { let j=Math.floor(Math.random()*(i+1)); [deck[i],deck[j]]=[deck[j],deck[i]]; }
+    return deck;
+  }
+  function renderMatchGame() {
+    const container = document.getElementById("matchGrid");
+    if(!container) return;
+    container.innerHTML = "";
+    currentMatchDeck.forEach((card, idx) => {
+      let div = document.createElement("div");
+      div.className = "match-card";
+      if(card.matched) div.classList.add("matched");
+      if(selectedMatchId === idx) div.classList.add("selected");
+      div.innerText = card.text;
+      div.onclick = () => onMatchClick(idx);
+      container.appendChild(div);
+    });
+    let matchedCount = currentMatchDeck.filter(c=>c.matched).length/2;
+    if(matchedCount === matchPairs.length) { document.getElementById("matchStatus").innerHTML = "🏆 All pairs matched! Press New Word Set."; matchComplete=true; }
+    else { document.getElementById("matchStatus").innerHTML = `📖 Matched ${matchedCount}/${matchPairs.length}. Click word, then definition.`; matchComplete=false; }
+  }
+  function onMatchClick(idx) {
+    if(matchComplete) return;
+    let card = currentMatchDeck[idx];
+    if(card.matched) return;
+    if(selectedMatchId === null) { selectedMatchId=idx; renderMatchGame(); return; }
+    let first = currentMatchDeck[selectedMatchId];
+    let second = card;
+    if(first.pairId === second.pairId && first.type !== second.type) {
+      first.matched=true; second.matched=true; selectedMatchId=null; renderMatchGame();
+    } else { document.getElementById("matchStatus").innerHTML = "❌ Not a match!"; selectedMatchId=null; renderMatchGame(); setTimeout(()=>{ if(!matchComplete) document.getElementById("matchStatus").innerHTML = "✨ click word, then definition ✨"; },800); }
+  }
+  function resetMatchGame() { currentMatchDeck = buildMatchDeck(); selectedMatchId=null; matchComplete=false; renderMatchGame(); }
+
+  // ----------------------------- WORD COMPLETE -----------------------------
+  const wordBook = [
+    { full: "HARMONY", blanked: "H_RM_NY", missing: "A,O", answer: "AO" },
+    { full: "CLARITY", blanked: "CL_R_TY", missing: "A,I", answer: "AI" },
+    { full: "RHYTHM", blanked: "RHY_HM", missing: "T", answer: "T" },
+    { full: "SERENE", blanked: "S_R_NE", missing: "E,E", answer: "EE" },
+    { full: "BREATHE", blanked: "BREA_HE", missing: "T", answer: "T" }
+  ];
+  let completeIdx = 0, streak = 0, totalCorr = 0;
+  let currentBlank = null;
+  function loadCompleteWord() {
+    currentBlank = { ...wordBook[completeIdx % wordBook.length] };
+    document.getElementById("blankWord").innerText = currentBlank.blanked.split('').join(' ');
+    let correct = currentBlank.answer;
+    let options = [correct];
+    let letters = "AEIOU";
+    if(correct.length===1){
+      while(options.length<3){ let r=letters[Math.floor(Math.random()*letters.length)]; if(!options.includes(r)) options.push(r); }
+    } else {
+      let extras=["AE","IO","OU","EA","UI"];
+      for(let ex of extras) if(ex !== correct && !options.includes(ex)) { options.push(ex); if(options.length===3) break; }
+      while(options.length<3) options.push(correct);
+    }
+    options.sort(()=>Math.random()-0.5);
+    const container = document.getElementById("letterOptions");
+    container.innerHTML = "";
+    options.forEach(opt => {
+      let btn = document.createElement("button");
+      btn.innerText = opt;
+      btn.onclick = () => checkComplete(opt);
+      container.appendChild(btn);
+    });
+    document.getElementById("completeFeedback").innerHTML = "🎤 Which letter(s) complete the word?";
+    document.getElementById("completeStreak").innerText = streak;
+    document.getElementById("totalCorrect").innerText = totalCorr;
+  }
+  function checkComplete(selected) {
+    if(selected === currentBlank.answer) {
+      streak++; totalCorr++;
+      document.getElementById("completeFeedback").innerHTML = "✅ Correct! +1 streak";
+      completeIdx++;
+      if(completeIdx >= wordBook.length) completeIdx=0;
+      loadCompleteWord();
+    } else {
+      streak=0;
+      document.getElementById("completeFeedback").innerHTML = `❌ Wrong. Answer was "${currentBlank.answer}". Next word.`;
+      completeIdx++;
+      if(completeIdx >= wordBook.length) completeIdx=0;
+      loadCompleteWord();
+    }
+    document.getElementById("completeStreak").innerText = streak;
+    document.getElementById("totalCorrect").innerText = totalCorr;
+  }
+  function resetCompleteGame() { streak=0; totalCorr=0; completeIdx=0; loadCompleteWord(); }
+
+  // ----------------------------- ARCADE NAVIGATION -----------------------------
+  const startup = document.getElementById("startupScreen");
+  const gameContainers = {
+    wordtemple: document.getElementById("gameWordTemple"),
+    lexicon: document.getElementById("gameLexicon"),
+    complete: document.getElementById("gameComplete")
+  };
+  function showGame(gameId) {
+    startup.style.display = "none";
+    for(let id in gameContainers) gameContainers[id].style.display = "none";
+    gameContainers[gameId].style.display = "block";
+  }
+  function showStartup() {
+    startup.style.display = "block";
+    for(let id in gameContainers) gameContainers[id].style.display = "none";
+  }
+  document.querySelectorAll(".arcade-btn").forEach(btn => {
+    btn.addEventListener("click", (e) => {
+      let game = btn.getAttribute("data-game");
+      if(game === "wordtemple") showGame("wordtemple");
+      if(game === "lexicon") showGame("lexicon");
+      if(game === "complete") showGame("complete");
+    });
+  });
+  document.querySelectorAll(".back-btn").forEach(btn => {
+    btn.addEventListener("click", () => showStartup());
+  });
+
+  // initialize all games
+  loadWordTemple(); updateZenScore();
+  document.getElementById("submitGuess")?.addEventListener("click", handleGuess);
+  document.getElementById("resetZenGame")?.addEventListener("click", resetWordTemple);
+  document.getElementById("wordGuessInput")?.addEventListener("keypress", (e) => { if(e.key === "Enter") handleGuess(); });
+  
+  currentMatchDeck = buildMatchDeck(); renderMatchGame();
+  document.getElementById("resetMatchGame")?.addEventListener("click", resetMatchGame);
+  
+  loadCompleteWord();
+  document.getElementById("resetCompleteGame")?.addEventListener("click", resetCompleteGame);
+  
+  // start at startup
+  showStartup();
+</script>
+</body>
+</html>
