@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <title>Band Board Jam | Reh Dogg Games Plus</title>
-
   <style>
     * {
       box-sizing: border-box;
@@ -101,6 +100,21 @@
       46%, 100% { opacity: 0.35; }
     }
 
+    .audio-control {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 1rem;
+    }
+    .mute-btn {
+      background: rgba(0,0,0,0.5);
+      border: 1px solid #ff2bd6;
+      color: #ffcc33;
+      padding: 4px 12px;
+      border-radius: 30px;
+      font-size: 0.7rem;
+      cursor: pointer;
+    }
+
     .game-row {
       display: flex;
       flex-wrap: wrap;
@@ -151,6 +165,13 @@
       border-radius: 999px;
       font-size: 0.72rem;
       font-weight: bold;
+    }
+
+    .game-panel {
+      background: #080d19;
+      border: 2px solid #00f5ff;
+      border-radius: 1.5rem;
+      padding: 1rem;
     }
 
     .ttt-grid {
@@ -205,16 +226,8 @@
       margin-top: 10px;
     }
 
-    .zen-word-area {
-      background: #080d19;
-      border: 2px solid #00f5ff;
-      border-radius: 1.5rem;
-      padding: 1rem;
-      text-align: center;
-    }
-
-    .scrambled-letters {
-      font-size: 2rem;
+    .scrambled-letters, .word-with-blanks {
+      font-size: 1.8rem;
       letter-spacing: 8px;
       font-weight: 1000;
       font-family: monospace;
@@ -224,15 +237,16 @@
       color: #ffcc33;
       border: 1px solid #ffcc33;
       margin-bottom: 1rem;
+      text-align: center;
     }
 
-    .zen-input {
+    .zen-input, .match-input {
       display: flex;
       gap: 8px;
       margin: 12px 0;
     }
 
-    .zen-input input {
+    .zen-input input, .match-input input {
       flex: 1;
       padding: 12px;
       border-radius: 60px;
@@ -244,7 +258,7 @@
       user-select: text;
     }
 
-    .zen-input button {
+    .zen-input button, .match-input button {
       background: #00f5ff;
       border: none;
       border-radius: 60px;
@@ -268,13 +282,57 @@
       margin-top: 8px;
     }
 
+    .match-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .match-card {
+      background: #10192d;
+      border: 1px solid #ff2bd6;
+      border-radius: 1rem;
+      padding: 8px;
+      text-align: center;
+      cursor: pointer;
+      color: #f5f5f5;
+      font-size: 0.8rem;
+    }
+    .match-card.selected {
+      background: #ffaa33;
+      color: #000;
+    }
+    .match-card.matched {
+      background: #2e6b47;
+      text-decoration: line-through;
+      opacity: 0.7;
+      pointer-events: none;
+    }
+
+    .options-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin: 15px 0;
+    }
+    .option-btn {
+      background: #ffcc33;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 60px;
+      font-weight: bold;
+      cursor: pointer;
+      color: #050812;
+    }
+
+    /* Memory grid - 4x4 */
     .memory-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 10px;
       margin: 12px 0;
     }
-
     .memory-card {
       aspect-ratio: 1 / 0.9;
       background: linear-gradient(135deg, #ff2bd6, #ffcc33);
@@ -283,22 +341,21 @@
       align-items: center;
       justify-content: center;
       font-weight: 1000;
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       cursor: pointer;
       text-align: center;
       color: #050812;
       padding: 5px;
+      word-break: break-word;
     }
-
     .memory-card.flipped,
     .memory-card.matched {
       background: #00f5ff;
       color: #050812;
     }
-
     .memory-card.matched {
       background: #79ff9b;
-      opacity: 0.75;
+      opacity: 0.8;
       text-decoration: line-through;
     }
 
@@ -313,35 +370,37 @@
       .game-card {
         width: 100%;
       }
-
-      .zen-input {
+      .zen-input, .match-input {
         flex-direction: column;
       }
     }
   </style>
 </head>
-
 <body>
 <div class="game-hub">
+
+  <div class="audio-control">
+    <button id="muteDangerBtn" class="mute-btn">🔊 Danger Sound ON</button>
+  </div>
 
   <div class="brand-header">
     <h1 class="brand-title">⚡ BAND BOARD JAM ⚡</h1>
     <div class="brand-subtitle">Reh Dogg Games Plus Arcade</div>
-    <div class="insert-coin">🕹️ INSERT COIN • PICK A GAME • START THE JAM 🕹️</div>
+    <div class="insert-coin">🕹️ 5 GAMES • 5 BANDS • INSERT COIN 🕹️</div>
   </div>
 
   <div class="game-row">
 
+    <!-- ZEN WORD -->
     <div class="game-card">
       <div class="band-header">
         <div class="game-name">🍃 ZEN WORD</div>
         <div class="band-label">🎸 Zen Garden Monks</div>
       </div>
-
-      <div class="game-board zen-word-area">
+      <div class="game-panel">
         <div class="scrambled-letters" id="scrambledWord">????</div>
         <div class="zen-input">
-          <input type="text" id="wordGuessInput" placeholder="type your word..." autocomplete="off">
+          <input type="text" id="wordGuessInput" placeholder="type word...">
           <button id="submitGuess">PLAY</button>
         </div>
         <div class="zen-score">
@@ -350,34 +409,64 @@
         </div>
         <div class="zen-feedback" id="zenFeedback">🌸 Unscramble the zen word.</div>
       </div>
-
       <button class="reset-btn" id="resetZenGame">⟳ NEW ZEN CYCLE</button>
     </div>
 
+    <!-- LEXICON MATCH -->
+    <div class="game-card">
+      <div class="band-header">
+        <div class="game-name">📖 LEXICON MATCH</div>
+        <div class="band-label">📚 The Lexicon Lords</div>
+      </div>
+      <div class="game-panel">
+        <div id="matchGrid" class="match-grid"></div>
+        <div id="matchStatus" class="status" style="margin-top:0;">✨ click a word, then its definition ✨</div>
+      </div>
+      <button class="reset-btn" id="resetMatchGame">⟳ NEW WORD SET</button>
+    </div>
+
+    <!-- WORD COMPLETE -->
+    <div class="game-card">
+      <div class="band-header">
+        <div class="game-name">🔠 WORD COMPLETE</div>
+        <div class="band-label">🎤 The Vowel Vandals</div>
+      </div>
+      <div class="game-panel">
+        <div class="word-with-blanks" id="blankWord">_ _ _ _</div>
+        <div id="letterOptions" class="options-buttons"></div>
+        <div id="completeFeedback" class="zen-feedback"></div>
+        <div class="zen-score">
+          <span>🏆 Streak: <span id="completeStreak">0</span></span>
+          <span>🌟 Total: <span id="totalCorrect">0</span></span>
+        </div>
+      </div>
+      <button class="reset-btn" id="resetCompleteGame">⟳ NEW WORD BOOK</button>
+    </div>
+
+    <!-- TIC TAC TOE -->
     <div class="game-card">
       <div class="band-header">
         <div class="game-name">⚡ TIC TAC TOE</div>
         <div class="band-label">🎤 The Tic-Tac-Tonics</div>
       </div>
-
-      <div class="game-board">
+      <div class="game-panel">
         <div class="ttt-grid" id="tttGrid"></div>
         <div class="status" id="tttStatus">🎵 Band Battle: X vs O</div>
-        <button class="reset-btn" id="resetTtt">⟳ NEW RIFF</button>
       </div>
+      <button class="reset-btn" id="resetTtt">⟳ NEW RIFF</button>
     </div>
 
+    <!-- MEMORY MATCH (HARDER – random bands each reset) -->
     <div class="game-card">
       <div class="band-header">
         <div class="game-name">🎶 MEMORY MATCH</div>
-        <div class="band-label">🎻 Memory Lane Orchestra</div>
+        <div class="band-label">🎻 Memory Lane Orchestra (Infinite Variety)</div>
       </div>
-
-      <div class="game-board">
+      <div class="game-panel">
         <div class="memory-grid" id="memoryGrid"></div>
-        <div class="memory-status" id="memoryStatus">🎶 Find the legendary band pairs!</div>
-        <button class="reset-btn" id="resetMemory">⟳ ENCORE SHUFFLE</button>
+        <div class="memory-status" id="memoryStatus">🎵 Random 8 bands every shuffle!</div>
       </div>
+      <button class="reset-btn" id="resetMemory">⟳ ENCORE SHUFFLE</button>
     </div>
 
   </div>
@@ -386,269 +475,310 @@
 </div>
 
 <script>
-  const zenWordBank = [
-    { word: "ZENITH", hint: "peak of calmness" },
-    { word: "MINDFUL", hint: "aware, present" },
-    { word: "SERENE", hint: "tranquil, peaceful" },
-    { word: "BREATHE", hint: "inhale, exhale, relax" },
-    { word: "HARMONY", hint: "balance, melody" },
-    { word: "GENTLE", hint: "soft, kind energy" },
-    { word: "PEACE", hint: "opposite of war" },
-    { word: "LOTUS", hint: "sacred flower" }
-  ];
+  // ---------- AUDIO ----------
+  let audioCtx = null;
+  let dangerMuted = false;
 
-  let currentZenIndex = 0;
-  let zenScore = 0;
-  let currentAnswer = "";
-
-  function scrambleWord(word) {
-    let arr = word.split('');
-    for (let i = arr.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [arr[i], arr[j]] = [arr[j], arr[i]];
+  function initAudio() {
+    if (!audioCtx) {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     }
-    let scrambled = arr.join('');
-    if (scrambled === word && word.length > 2) {
-      let temp = scrambled.split('');
-      [temp[0], temp[1]] = [temp[1], temp[0]];
-      scrambled = temp.join('');
-    }
-    return scrambled.toUpperCase();
   }
 
+  function playDangerSound() {
+    if (dangerMuted) return;
+    if (!audioCtx) initAudio();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const now = audioCtx.currentTime;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.type = 'sawtooth';
+    osc.frequency.value = 880;
+    gain.gain.value = 0.3;
+    osc.start();
+    gain.gain.exponentialRampToValueAtTime(0.00001, now + 0.5);
+    osc.stop(now + 0.5);
+  }
+
+  document.getElementById('muteDangerBtn').addEventListener('click', () => {
+    dangerMuted = !dangerMuted;
+    document.getElementById('muteDangerBtn').innerText = dangerMuted ? '🔇 Danger OFF' : '🔊 Danger ON';
+  });
+
+  // ---------- ZEN WORD (32 words, unchanged) ----------
+  const zenWordBank = [
+    { word: "ZENITH", hint: "peak of calmness" }, { word: "MINDFUL", hint: "aware, present" },
+    { word: "SERENE", hint: "tranquil" }, { word: "BREATHE", hint: "inhale, relax" },
+    { word: "HARMONY", hint: "balance" }, { word: "PEACE", hint: "opposite of war" },
+    { word: "LOTUS", hint: "sacred flower" }, { word: "CLARITY", hint: "clear vision" },
+    { word: "AQUARIUM", hint: "fish tank" }, { word: "BRILLIANT", hint: "very bright" },
+    { word: "CASCADE", hint: "waterfall" }, { word: "DIAMOND", hint: "precious stone" },
+    { word: "ECLIPSE", hint: "sun/moon cover" }, { word: "FORTITUDE", hint: "courage" },
+    { word: "GLACIER", hint: "ice river" }, { word: "HORIZON", hint: "where sky meets earth" },
+    { word: "ILLUSION", hint: "trick of the eye" }, { word: "JUBILANT", hint: "joyful" },
+    { word: "KALEIDOSCOPE", hint: "changing pattern" }, { word: "LUMINESCENT", hint: "glowing" },
+    { word: "MEANDER", hint: "winding path" }, { word: "NEBULA", hint: "space cloud" },
+    { word: "OBSIDIAN", hint: "volcanic glass" }, { word: "PRISTINE", hint: "perfect condition" },
+    { word: "QUINTESSENCE", hint: "pure essence" }, { word: "RESILIENCE", hint: "toughness" },
+    { word: "SAPPHIRE", hint: "blue gem" }, { word: "TRANQUIL", hint: "calm" },
+    { word: "ULTRAMARINE", hint: "deep blue" }, { word: "VERDANT", hint: "green plants" },
+    { word: "WHIMSICAL", hint: "playful" }, { word: "XYLOPHONE", hint: "musical instrument" }
+  ];
+  let currentZenIndex = 0, zenScore = 0, currentAnswer = "";
+  function scrambleWord(w) {
+    let a = w.split('');
+    for (let i = a.length - 1; i > 0; i--) { let j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+    let s = a.join('');
+    if (s === w && w.length > 2) { let t = s.split(''); [t[0], t[1]] = [t[1], t[0]]; s = t.join(''); }
+    return s.toUpperCase();
+  }
   function loadZenWord() {
-    const wordObj = zenWordBank[currentZenIndex % zenWordBank.length];
-    currentAnswer = wordObj.word.toUpperCase();
+    let obj = zenWordBank[currentZenIndex % zenWordBank.length];
+    currentAnswer = obj.word.toUpperCase();
     document.getElementById("scrambledWord").innerText = scrambleWord(currentAnswer);
     document.getElementById("currentWordIndex").innerText = (currentZenIndex % zenWordBank.length) + 1;
     document.getElementById("totalWordsCount").innerText = zenWordBank.length;
-    document.getElementById("zenFeedback").innerHTML = `🎋 Hint: ${wordObj.hint}`;
+    document.getElementById("zenFeedback").innerHTML = `🎋 Hint: ${obj.hint}`;
     document.getElementById("wordGuessInput").value = "";
   }
-
-  function updateZenScoreUI() {
-    document.getElementById("zenScore").innerText = zenScore;
-  }
-
-  function handleZenGuess() {
-    const inputEl = document.getElementById("wordGuessInput");
-    let guess = inputEl.value.trim().toUpperCase();
-
-    if (guess === "") {
-      document.getElementById("zenFeedback").innerHTML = "🌿 Type a word first.";
-      return;
-    }
-
+  function updateZenScore() { document.getElementById("zenScore").innerText = zenScore; }
+  function handleGuess() {
+    let guess = document.getElementById("wordGuessInput").value.trim().toUpperCase();
+    if (!guess) { document.getElementById("zenFeedback").innerHTML = "🌿 Type a word."; return; }
     if (guess === currentAnswer) {
-      zenScore += 10;
-      currentZenIndex++;
-      if (currentZenIndex >= zenWordBank.length) {
-        currentZenIndex = 0;
-        zenScore += 10;
-      }
-      updateZenScoreUI();
-      loadZenWord();
+      zenScore += 10; currentZenIndex++;
+      if (currentZenIndex >= zenWordBank.length) { currentZenIndex = 0; zenScore += 10; }
+      updateZenScore(); loadZenWord();
       document.getElementById("zenFeedback").innerHTML = "✨ Correct! Next word.";
-    } else {
-      document.getElementById("zenFeedback").innerHTML = "❌ Wrong. Try again.";
-    }
-
-    inputEl.value = "";
+    } else { playDangerSound(); document.getElementById("zenFeedback").innerHTML = "❌ Wrong. Try again."; }
+    document.getElementById("wordGuessInput").value = "";
   }
+  function resetZenGame() { zenScore = 0; currentZenIndex = 0; updateZenScore(); loadZenWord(); }
 
-  function resetZenGame() {
-    zenScore = 0;
-    currentZenIndex = 0;
-    updateZenScoreUI();
-    loadZenWord();
-  }
-
-  let tttBoard = ["", "", "", "", "", "", "", "", ""];
-  let currentPlayer = "X";
-  let gameActive = true;
-
-  const winConditions = [
-    [0,1,2], [3,4,5], [6,7,8],
-    [0,3,6], [1,4,7], [2,5,8],
-    [0,4,8], [2,4,6]
+  // ---------- LEXICON MATCH ----------
+  const matchPairs = [
+    { word: "Eloquent", def: "Fluent & persuasive" }, { word: "Mellifluous", def: "Sweet-sounding" },
+    { word: "Resilient", def: "Recovers quickly" }, { word: "Luminous", def: "Emitting light" },
+    { word: "Ubiquitous", def: "Everywhere" }, { word: "Ephemeral", def: "Short-lived" },
+    { word: "Ineffable", def: "Too great to describe" }, { word: "Serendipity", def: "Happy accident" },
+    { word: "Petrichor", def: "Smell after rain" }, { word: "Defenestration", def: "Throwing out a window" },
+    { word: "Susurrus", def: "Whispering" }, { word: "Lethologica", def: "Tip-of-tongue" },
+    { word: "Nostalgia", def: "Longing for past" }, { word: "Solitude", def: "Being alone" },
+    { word: "Iridescent", def: "Rainbow colors" }, { word: "Quixotic", def: "Idealistic" },
+    { word: "Sonder", def: "Others have lives" }, { word: "Vellichor", def: "Smell of old books" },
+    { word: "Cynosure", def: "Center of attention" }, { word: "Raconteur", def: "Storyteller" },
+    { word: "Lagniappe", def: "Small gift" }, { word: "Miasma", def: "Unpleasant fog" },
+    { word: "Opulent", def: "Luxurious" }, { word: "Pernicious", def: "Harmful" },
+    { word: "Quintessential", def: "Perfect example" }, { word: "Sagacious", def: "Wise" },
+    { word: "Trenchant", def: "Keen, incisive" }, { word: "Unequivocal", def: "No doubt" },
+    { word: "Verisimilitude", def: "Truth appearance" }, { word: "Winsome", def: "Charming" }
   ];
-
-  function renderTicTacToe() {
-    const container = document.getElementById("tttGrid");
-    container.innerHTML = "";
-
-    for (let i = 0; i < 9; i++) {
-      const cell = document.createElement("div");
-      cell.classList.add("ttt-cell");
-      cell.innerText = tttBoard[i] === "X" ? "🎸" : (tttBoard[i] === "O" ? "🥁" : "");
-      cell.addEventListener("click", () => handleTttMove(i));
-      container.appendChild(cell);
-    }
-
-    if (gameActive) {
-      document.getElementById("tttStatus").innerHTML =
-        currentPlayer === "X" ? "🎸 Guitar turn!" : "🥁 Drum turn!";
-    }
-  }
-
-  function checkWinner() {
-    for (let condition of winConditions) {
-      const [a,b,c] = condition;
-      if (tttBoard[a] && tttBoard[a] === tttBoard[b] && tttBoard[a] === tttBoard[c]) {
-        gameActive = false;
-        document.getElementById("tttStatus").innerHTML = `🏆 ${tttBoard[a]} wins the jam!`;
-        return true;
-      }
-    }
-
-    if (!tttBoard.includes("")) {
-      gameActive = false;
-      document.getElementById("tttStatus").innerHTML = "🎶 Draw!";
-      return true;
-    }
-
-    return false;
-  }
-
-  function handleTttMove(index) {
-    if (!gameActive || tttBoard[index] !== "") return;
-
-    tttBoard[index] = currentPlayer;
-    renderTicTacToe();
-
-    if (!checkWinner()) {
-      currentPlayer = currentPlayer === "X" ? "O" : "X";
-      renderTicTacToe();
-    }
-  }
-
-  function resetTicTacToe() {
-    tttBoard = ["", "", "", "", "", "", "", "", ""];
-    currentPlayer = "X";
-    gameActive = true;
-    renderTicTacToe();
-  }
-
-  const bandData = [
-    { name: "🎸 REH DOGG", pairId: 1 },
-    { name: "⚡ SUDS CREW", pairId: 2 },
-    { name: "🌴 ISLAND JAM", pairId: 3 },
-    { name: "🎤 MIC KINGS", pairId: 4 },
-    { name: "🎸 REH DOGG", pairId: 1 },
-    { name: "⚡ SUDS CREW", pairId: 2 },
-    { name: "🌴 ISLAND JAM", pairId: 3 },
-    { name: "🎤 MIC KINGS", pairId: 4 }
-  ];
-
-  let memoryCards = [];
-  let flippedIndices = [];
-  let lockBoard = false;
-  let matchedPairs = 0;
-
-  function shuffleArray(arr) {
-    for (let i = arr.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [arr[i], arr[j]] = [arr[j], arr[i]];
-    }
-    return arr;
-  }
-
-  function initMemoryGame() {
-    memoryCards = bandData.map((card, idx) => ({
-      id: idx,
-      pairId: card.pairId,
-      name: card.name,
-      flipped: false,
-      matched: false
-    }));
-
-    memoryCards = shuffleArray(memoryCards);
-    flippedIndices = [];
-    lockBoard = false;
-    matchedPairs = 0;
-    renderMemoryBoard();
-  }
-
-  function renderMemoryBoard() {
-    const memoryGridElement = document.getElementById("memoryGrid");
-    const memoryStatus = document.getElementById("memoryStatus");
-    memoryGridElement.innerHTML = "";
-
-    memoryCards.forEach((card, idx) => {
-      const cardDiv = document.createElement("div");
-      cardDiv.classList.add("memory-card");
-
-      if (card.flipped || card.matched) {
-        cardDiv.innerText = card.name;
-      } else {
-        cardDiv.innerText = "? ? ?";
-      }
-
-      if (card.matched) {
-        cardDiv.classList.add("matched");
-        cardDiv.innerText = "✓ " + card.name;
-      }
-
-      cardDiv.addEventListener("click", () => onCardClick(idx));
-      memoryGridElement.appendChild(cardDiv);
+  let matchDeck = [], selectedMatchId = null, matchComplete = false;
+  function buildMatchDeck() {
+    let deck = [];
+    matchPairs.forEach((p, idx) => {
+      deck.push({ text: p.word, type: "word", pairId: idx, matched: false });
+      deck.push({ text: p.def, type: "def", pairId: idx, matched: false });
     });
+    for (let i = deck.length-1; i>0; i--) { let j=Math.floor(Math.random()*(i+1)); [deck[i],deck[j]]=[deck[j],deck[i]]; }
+    return deck;
+  }
+  function renderMatch() {
+    let container = document.getElementById("matchGrid");
+    container.innerHTML = "";
+    matchDeck.forEach((card, idx) => {
+      let div = document.createElement("div"); div.className = "match-card";
+      if (card.matched) div.classList.add("matched");
+      if (selectedMatchId === idx) div.classList.add("selected");
+      div.innerText = card.text; div.onclick = () => onMatchClick(idx);
+      container.appendChild(div);
+    });
+    let matched = matchDeck.filter(c=>c.matched).length/2;
+    if (matched === matchPairs.length) { document.getElementById("matchStatus").innerHTML = "🏆 All matched!"; matchComplete = true; }
+    else { document.getElementById("matchStatus").innerHTML = `📖 Matched ${matched}/${matchPairs.length}. Click word → definition.`; matchComplete = false; }
+  }
+  function onMatchClick(idx) {
+    if (matchComplete) return;
+    let card = matchDeck[idx];
+    if (card.matched) return;
+    if (selectedMatchId === null) { selectedMatchId = idx; renderMatch(); return; }
+    let first = matchDeck[selectedMatchId], second = card;
+    if (first.pairId === second.pairId && first.type !== second.type) {
+      first.matched = true; second.matched = true; selectedMatchId = null; renderMatch();
+    } else { playDangerSound(); document.getElementById("matchStatus").innerHTML = "❌ Not a match!"; selectedMatchId = null; renderMatch(); setTimeout(()=>{ if(!matchComplete) document.getElementById("matchStatus").innerHTML = "✨ click word, then definition ✨"; },800); }
+  }
+  function resetMatch() { matchDeck = buildMatchDeck(); selectedMatchId = null; matchComplete = false; renderMatch(); }
 
-    memoryStatus.innerText = matchedPairs === 4
-      ? "🏆 All bands matched!"
-      : `🎵 Matched: ${matchedPairs}/4`;
+  // ---------- WORD COMPLETE ----------
+  const wordBook = [
+    { blanked: "H_RM_NY", answer: "AO" }, { blanked: "CL_R_TY", answer: "AI" }, { blanked: "RHY_HM", answer: "T" },
+    { blanked: "S_R_NE", answer: "EE" }, { blanked: "BREA_HE", answer: "T" }, { blanked: "AQU_R_UM", answer: "AI" },
+    { blanked: "BR_LL_ANT", answer: "II" }, { blanked: "C_SS_DE", answer: "AA" }, { blanked: "D_AM_ND", answer: "IO" },
+    { blanked: "ECL_PSE", answer: "I" }, { blanked: "F_RT_T_D_", answer: "OIU" }, { blanked: "GL_CI_R", answer: "AE" },
+    { blanked: "H_R_Z_N", answer: "OI" }, { blanked: "ILL_S_ON", answer: "U" }, { blanked: "J_B_L_NT", answer: "UIA" },
+    { blanked: "K_L_IDSCOP_", answer: "AEE" }, { blanked: "L_M_N_SC_NT", answer: "UIEE" }, { blanked: "M_AND_R", answer: "E" },
+    { blanked: "N_B_L_", answer: "UA" }, { blanked: "OBS_D_AN", answer: "II" }, { blanked: "PR_ST_N_", answer: "IIE" },
+    { blanked: "QU_NT_SS_NC_", answer: "IEE" }, { blanked: "R_S_L_ENC_", answer: "EII" }, { blanked: "S_PPH_R_", answer: "AIE" },
+    { blanked: "TR_NQU_L", answer: "AI" }, { blanked: "ULTRA_AR_N_", answer: "MIE" }, { blanked: "V_RD_NT", answer: "E" }
+  ];
+  let completeIdx = 0, streak = 0, totalCorr = 0, currentBlank = null;
+  function loadComplete() {
+    currentBlank = wordBook[completeIdx % wordBook.length];
+    document.getElementById("blankWord").innerText = currentBlank.blanked.split('').join(' ');
+    let correct = currentBlank.answer;
+    let opts = [correct];
+    if (correct.length === 1) { let letters="AEIOU"; while(opts.length<3){ let r=letters[Math.floor(Math.random()*letters.length)]; if(!opts.includes(r)) opts.push(r); } }
+    else { let extras=["AE","IO","OU","EA","AI","UI","EE","AO"]; for(let ex of extras){ if(ex!==correct && !opts.includes(ex)){ opts.push(ex); if(opts.length===3) break; } } while(opts.length<3) opts.push(correct); }
+    opts.sort(()=>Math.random()-0.5);
+    let container = document.getElementById("letterOptions");
+    container.innerHTML = "";
+    opts.forEach(opt=>{ let btn=document.createElement("button"); btn.innerText=opt; btn.className="option-btn"; btn.onclick=()=>checkComplete(opt); container.appendChild(btn); });
+    document.getElementById("completeFeedback").innerHTML = "🎤 Which letter(s) fit?";
+    document.getElementById("completeStreak").innerText = streak; document.getElementById("totalCorrect").innerText = totalCorr;
+  }
+  function checkComplete(selected) {
+    if (selected === currentBlank.answer) { streak++; totalCorr++; completeIdx++; if(completeIdx>=wordBook.length) completeIdx=0; loadComplete(); }
+    else { playDangerSound(); streak=0; completeIdx++; if(completeIdx>=wordBook.length) completeIdx=0; loadComplete(); }
+    document.getElementById("completeStreak").innerText = streak; document.getElementById("totalCorrect").innerText = totalCorr;
+  }
+  function resetComplete() { streak=0; totalCorr=0; completeIdx=0; loadComplete(); }
+
+  // ---------- TIC TAC TOE ----------
+  let tttBoard = ["","","","","","","","",""], tttPlayer = "X", tttActive = true;
+  const wins = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+  function renderTTT() {
+    let grid = document.getElementById("tttGrid");
+    grid.innerHTML = "";
+    for(let i=0;i<9;i++) {
+      let cell = document.createElement("div"); cell.className = "ttt-cell";
+      cell.innerText = tttBoard[i] === "X" ? "🎸" : (tttBoard[i] === "O" ? "🥁" : "");
+      cell.onclick = () => tttMove(i);
+      grid.appendChild(cell);
+    }
+    if(tttActive) document.getElementById("tttStatus").innerHTML = tttPlayer === "X" ? "🎸 Guitar turn" : "🥁 Drum turn";
+  }
+  function checkTTTWin() { for(let w of wins) if(tttBoard[w[0]] && tttBoard[w[0]]===tttBoard[w[1]] && tttBoard[w[0]]===tttBoard[w[2]]) return true; return false; }
+  function tttMove(idx) {
+    if(!tttActive || tttBoard[idx]!=="") return;
+    tttBoard[idx] = tttPlayer;
+    renderTTT();
+    if(checkTTTWin()) { tttActive=false; document.getElementById("tttStatus").innerHTML = `🏆 ${tttPlayer} wins!`; return; }
+    if(!tttBoard.includes("")) { tttActive=false; document.getElementById("tttStatus").innerHTML = "🎶 Draw!"; return; }
+    tttPlayer = tttPlayer === "X" ? "O" : "X";
+    renderTTT();
+  }
+  function resetTTT() { tttBoard = ["","","","","","","","",""]; tttPlayer = "X"; tttActive = true; renderTTT(); }
+
+  // ---------- MEMORY MATCH (HARD & VARIABLE) ----------
+  // Master list of 20 different bands – each reset picks 8 random ones
+  const masterBandList = [
+    "🎸 REH DOGG", "⚡ SUDS CREW", "🌴 ISLAND JAM", "🎤 MIC KINGS",
+    "🥁 BEAT KEEPERS", "🎹 KEY MASTERS", "🪘 JUNGLE RHYTHM", "🎧 MIDNIGHT GROOVE",
+    "🎺 BRASS MONKEYS", "🎻 STRING THEORY", "🎷 SAX SYNDICATE", "🎛️ SYNTH WAVE",
+    "🎸 RHYTHM REBELS", "🥁 CYBER BEATS", "🎤 VOCAL VIPERS", "🎹 PIANO PUNKS",
+    "🪕 BANJO BLAZE", "🎸 GLITCH GUITARS", "🎺 TRUMPET TITANS", "🎧 DREAM DRIFTERS"
+  ];
+
+  let memCards = [], memFlipped = [], memLock = false, memMatched = 0;
+  let currentMemoryPairs = []; // store the 8 chosen bands for this session
+
+  function getRandomBands(count) {
+    // shuffle master list and take first 'count'
+    const shuffled = [...masterBandList];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled.slice(0, count);
   }
 
-  function onCardClick(clickedIdx) {
-    if (lockBoard) return;
+  function initMemory() {
+    // pick 8 random bands from master list
+    currentMemoryPairs = getRandomBands(8);
+    // build deck: each band appears twice
+    let deck = [];
+    currentMemoryPairs.forEach((band, idx) => {
+      deck.push({ name: band, id: idx, matched: false, flipped: false });
+      deck.push({ name: band, id: idx, matched: false, flipped: false });
+    });
+    // shuffle deck
+    for (let i = deck.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [deck[i], deck[j]] = [deck[j], deck[i]];
+    }
+    memCards = deck;
+    memFlipped = [];
+    memLock = false;
+    memMatched = 0;
+    renderMemory();
+  }
 
-    const card = memoryCards[clickedIdx];
+  function renderMemory() {
+    let grid = document.getElementById("memoryGrid");
+    grid.innerHTML = "";
+    memCards.forEach((card, idx) => {
+      let div = document.createElement("div");
+      div.className = "memory-card";
+      if (card.flipped || card.matched) div.classList.add("flipped");
+      if (card.matched) div.classList.add("matched");
+      div.innerText = (card.flipped || card.matched) ? card.name : "? ? ?";
+      div.onclick = () => memoryClick(idx);
+      grid.appendChild(div);
+    });
+    document.getElementById("memoryStatus").innerHTML = `🎵 Random 8 bands this round! Matched ${memMatched}/8 pairs.`;
+    if (memMatched === 8) document.getElementById("memoryStatus").innerHTML = "🏆 PERFECT! New bands next shuffle!";
+  }
+
+  function memoryClick(idx) {
+    if (memLock) return;
+    let card = memCards[idx];
     if (card.matched || card.flipped) return;
-
     card.flipped = true;
-    flippedIndices.push(clickedIdx);
-    renderMemoryBoard();
-
-    if (flippedIndices.length === 2) {
-      lockBoard = true;
-
-      const cardA = memoryCards[flippedIndices[0]];
-      const cardB = memoryCards[flippedIndices[1]];
-
-      if (cardA.pairId === cardB.pairId) {
-        cardA.matched = true;
-        cardB.matched = true;
-        matchedPairs++;
-        flippedIndices = [];
-        lockBoard = false;
-        renderMemoryBoard();
+    memFlipped.push(idx);
+    renderMemory();
+    if (memFlipped.length === 2) {
+      memLock = true;
+      let i1 = memFlipped[0], i2 = memFlipped[1];
+      if (memCards[i1].id === memCards[i2].id) {
+        memCards[i1].matched = true;
+        memCards[i2].matched = true;
+        memMatched++;
+        memFlipped = [];
+        memLock = false;
+        renderMemory();
       } else {
+        playDangerSound();  // wrong pair
         setTimeout(() => {
-          cardA.flipped = false;
-          cardB.flipped = false;
-          flippedIndices = [];
-          lockBoard = false;
-          renderMemoryBoard();
+          memCards[i1].flipped = false;
+          memCards[i2].flipped = false;
+          memFlipped = [];
+          memLock = false;
+          renderMemory();
         }, 800);
       }
     }
   }
 
+  // ---------- INITIALIZE ALL 5 GAMES ----------
   document.addEventListener("DOMContentLoaded", () => {
-    loadZenWord();
-    updateZenScoreUI();
-
-    document.getElementById("submitGuess").addEventListener("click", handleZenGuess);
+    loadZenWord(); updateZenScore();
+    document.getElementById("submitGuess").addEventListener("click", handleGuess);
     document.getElementById("resetZenGame").addEventListener("click", resetZenGame);
-    document.getElementById("wordGuessInput").addEventListener("keypress", (e) => {
-      if (e.key === "Enter") handleZenGuess();
-    });
+    document.getElementById("wordGuessInput").addEventListener("keypress", e => { if(e.key === "Enter") handleGuess(); });
 
-    renderTicTacToe();
-    document.getElementById("resetTtt").addEventListener("click", resetTicTacToe);
+    matchDeck = buildMatchDeck(); renderMatch();
+    document.getElementById("resetMatchGame").addEventListener("click", resetMatch);
 
-    initMemoryGame();
-    document.getElementById("resetMemory").addEventListener("click", initMemoryGame);
+    loadComplete(); document.getElementById("resetCompleteGame").addEventListener("click", resetComplete);
+
+    renderTTT(); document.getElementById("resetTtt").addEventListener("click", resetTTT);
+
+    initMemory(); document.getElementById("resetMemory").addEventListener("click", initMemory);
   });
+
+  document.body.addEventListener('click', () => { initAudio(); }, { once: true });
 </script>
 </body>
 </html>
