@@ -20,4 +20,5 @@ Why play?
 · No timers, no pressure – pure chill brain training.
 · Each game has its own visual style and band personality.
 · Perfect for music lovers and puzzle fans.
+Play game: https://rehdogg60-hub.github.io/band_board_jam/
 
