@@ -44,12 +44,12 @@
     .game-hub {
       position: relative;
       z-index: 1;
-      max-width: 1400px;
+      max-width: 1200px;
       width: 100%;
       background: rgba(5, 8, 18, 0.88);
       border: 3px solid #ff2bd6;
       border-radius: 2.5rem;
-      padding: 2rem 1.3rem;
+      padding: 2rem 1.5rem;
       box-shadow:
         0 0 0 4px #ffcc33,
         0 0 35px rgba(255, 43, 214, 0.45),
@@ -115,119 +115,82 @@
       cursor: pointer;
     }
 
-    .game-row {
+    /* startup screen (arcade menu) */
+    .startup-screen {
+      text-align: center;
+    }
+    .game-selector {
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
       gap: 1.5rem;
+      margin: 2rem 0;
+    }
+    .arcade-btn {
+      background: #311c35;
+      border: 4px solid #ffcc44;
+      border-radius: 36px;
+      padding: 1rem 1.2rem;
+      width: 200px;
+      cursor: pointer;
+      box-shadow: 0 10px 0 #5a2e2e;
+      text-align: center;
+    }
+    .arcade-btn:active { transform: translateY(4px); box-shadow: 0 4px 0 #5a2e2e; }
+    .arcade-btn h2 { color: #ffdd99; font-size: 1.3rem; margin: 0 0 0.3rem; }
+    .arcade-btn p { color: #ffccbb; font-size: 0.65rem; margin: 0; }
+
+    /* game container (only one visible at a time) */
+    .game-container {
+      display: none;
     }
 
-    .game-card {
-      background: linear-gradient(180deg, rgba(20, 25, 45, 0.98), rgba(5, 8, 18, 0.95));
-      border-radius: 2rem;
-      padding: 1.5rem;
-      width: 340px;
-      border: 2px solid #00f5ff;
-      box-shadow:
-        0 12px 0 #092533,
-        0 0 22px rgba(0, 245, 255, 0.25);
-      transition: 0.15s ease;
+    .game-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 1.5rem;
+      background: rgba(0,0,0,0.4);
+      padding: 0.5rem 1rem;
+      border-radius: 60px;
     }
-
-    .game-card:hover {
-      transform: translateY(-6px);
-      border-color: #ffcc33;
-      box-shadow:
-        0 16px 0 #3b2200,
-        0 0 28px rgba(255, 204, 51, 0.35);
-    }
-
-    .band-header {
-      border-bottom: 2px dashed rgba(255, 204, 51, 0.7);
-      padding-bottom: 0.8rem;
-      margin-bottom: 1rem;
-    }
-
-    .game-name {
-      font-size: 1.7rem;
-      font-weight: 1000;
-      color: #ffcc33;
-      text-shadow: 0 0 8px rgba(255, 204, 51, 0.6);
-    }
-
-    .band-label {
-      margin-top: 0.45rem;
-      display: inline-block;
-      background: rgba(255, 43, 214, 0.18);
-      color: #ff8bea;
-      border: 1px solid #ff2bd6;
-      padding: 0.25rem 0.75rem;
-      border-radius: 999px;
-      font-size: 0.72rem;
+    .back-btn {
+      background: #ffcc66;
+      border: none;
+      padding: 6px 16px;
+      border-radius: 60px;
       font-weight: bold;
+      cursor: pointer;
+    }
+    .band-tag {
+      background: rgba(255, 43, 214, 0.3);
+      padding: 4px 12px;
+      border-radius: 60px;
+      font-size: 0.7rem;
+      color: #ff8bea;
     }
 
     .game-panel {
       background: #080d19;
       border: 2px solid #00f5ff;
       border-radius: 1.5rem;
-      padding: 1rem;
-    }
-
-    .ttt-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-      background: #050812;
-      padding: 12px;
-      border-radius: 1.5rem;
-      border: 2px solid #ff2bd6;
-    }
-
-    .ttt-cell {
-      aspect-ratio: 1 / 1;
-      background: #10192d;
-      border-radius: 1rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 2.4rem;
-      cursor: pointer;
-      box-shadow: inset 0 0 12px rgba(0,255,255,0.15);
-    }
-
-    .status,
-    .zen-score,
-    .memory-status,
-    .zen-feedback {
-      color: #f5f5f5;
-    }
-
-    .status {
-      text-align: center;
-      font-weight: bold;
-      margin: 12px 0 8px;
-      background: rgba(0, 245, 255, 0.08);
-      border: 1px solid rgba(0, 245, 255, 0.4);
-      padding: 8px;
-      border-radius: 60px;
-      font-size: 0.85rem;
+      padding: 1.5rem;
     }
 
     .reset-btn {
       background: linear-gradient(135deg, #ff2bd6, #ffcc33);
       border: none;
       font-weight: 1000;
-      padding: 9px 15px;
+      padding: 10px;
       border-radius: 40px;
       cursor: pointer;
       color: #050812;
       width: 100%;
-      margin-top: 10px;
+      margin-top: 20px;
     }
 
     .scrambled-letters, .word-with-blanks {
-      font-size: 1.8rem;
+      font-size: 2rem;
       letter-spacing: 8px;
       font-weight: 1000;
       font-family: monospace;
@@ -240,13 +203,12 @@
       text-align: center;
     }
 
-    .zen-input, .match-input {
+    .zen-input {
       display: flex;
       gap: 8px;
       margin: 12px 0;
     }
-
-    .zen-input input, .match-input input {
+    .zen-input input {
       flex: 1;
       padding: 12px;
       border-radius: 60px;
@@ -257,8 +219,7 @@
       font-weight: bold;
       user-select: text;
     }
-
-    .zen-input button, .match-input button {
+    .zen-input button {
       background: #00f5ff;
       border: none;
       border-radius: 60px;
@@ -276,62 +237,62 @@
       border-radius: 60px;
     }
 
-    .zen-feedback {
-      font-size: 0.75rem;
-      min-height: 32px;
-      margin-top: 8px;
-    }
-
     .match-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 8px;
+      gap: 12px;
       margin-bottom: 12px;
     }
     .match-card {
       background: #10192d;
       border: 1px solid #ff2bd6;
       border-radius: 1rem;
-      padding: 8px;
+      padding: 10px;
       text-align: center;
       cursor: pointer;
       color: #f5f5f5;
-      font-size: 0.8rem;
     }
-    .match-card.selected {
-      background: #ffaa33;
-      color: #000;
-    }
-    .match-card.matched {
-      background: #2e6b47;
-      text-decoration: line-through;
-      opacity: 0.7;
-      pointer-events: none;
-    }
+    .match-card.selected { background: #ffaa33; color: #000; }
+    .match-card.matched { background: #2e6b47; text-decoration: line-through; opacity: 0.7; pointer-events: none; }
 
     .options-buttons {
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
-      gap: 10px;
+      gap: 12px;
       margin: 15px 0;
     }
     .option-btn {
       background: #ffcc33;
       border: none;
-      padding: 8px 16px;
+      padding: 8px 20px;
       border-radius: 60px;
       font-weight: bold;
       cursor: pointer;
-      color: #050812;
     }
 
-    /* Memory grid - 4x4 */
+    .ttt-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      max-width: 300px;
+      margin: 0 auto;
+    }
+    .ttt-cell {
+      aspect-ratio: 1;
+      background: #10192d;
+      border-radius: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.5rem;
+      cursor: pointer;
+    }
+
     .memory-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 10px;
-      margin: 12px 0;
     }
     .memory-card {
       aspect-ratio: 1 / 0.9;
@@ -340,45 +301,40 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-weight: 1000;
       font-size: 0.85rem;
       cursor: pointer;
       text-align: center;
-      color: #050812;
       padding: 5px;
-      word-break: break-word;
-    }
-    .memory-card.flipped,
-    .memory-card.matched {
-      background: #00f5ff;
       color: #050812;
+      font-weight: bold;
+    }
+    .memory-card.flipped, .memory-card.matched {
+      background: #00f5ff;
     }
     .memory-card.matched {
       background: #79ff9b;
-      opacity: 0.8;
       text-decoration: line-through;
+      opacity: 0.8;
+    }
+
+    .status {
+      text-align: center;
+      background: rgba(0,245,255,0.1);
+      padding: 8px;
+      border-radius: 60px;
+      margin-top: 12px;
     }
 
     footer {
       text-align: center;
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       margin-top: 2rem;
       color: #ffcc33;
-    }
-
-    @media (max-width: 760px) {
-      .game-card {
-        width: 100%;
-      }
-      .zen-input, .match-input {
-        flex-direction: column;
-      }
     }
   </style>
 </head>
 <body>
 <div class="game-hub">
-
   <div class="audio-control">
     <button id="muteDangerBtn" class="mute-btn">🔊 Danger Sound ON</button>
   </div>
@@ -386,89 +342,96 @@
   <div class="brand-header">
     <h1 class="brand-title">⚡ BAND BOARD JAM ⚡</h1>
     <div class="brand-subtitle">Reh Dogg Games Plus Arcade</div>
-    <div class="insert-coin">🕹️ 5 GAMES • 5 BANDS • INSERT COIN 🕹️</div>
+    <div class="insert-coin">🕹️ INSERT COIN • SELECT GAME • START THE JAM 🕹️</div>
   </div>
 
-  <div class="game-row">
+  <!-- STARTUP SCREEN (arcade menu) -->
+  <div id="startupScreen" class="startup-screen">
+    <div class="game-selector">
+      <div class="arcade-btn" data-game="zen"><h2>🍃 ZEN WORD</h2><p>unscramble · Zen Garden Monks</p></div>
+      <div class="arcade-btn" data-game="lex"><h2>📖 LEXICON MATCH</h2><p>word ↔ def · Lexicon Lords</p></div>
+      <div class="arcade-btn" data-game="complete"><h2>🔠 WORD COMPLETE</h2><p>fill missing · Vowel Vandals</p></div>
+      <div class="arcade-btn" data-game="ttt"><h2>⚡ TIC TAC TOE</h2><p>guitar vs drums · Tic-Tac-Tonics</p></div>
+      <div class="arcade-btn" data-game="memory"><h2>🎶 MEMORY MATCH</h2><p>hard mode · Memory Orchestra</p></div>
+    </div>
+  </div>
 
-    <!-- ZEN WORD -->
-    <div class="game-card">
-      <div class="band-header">
-        <div class="game-name">🍃 ZEN WORD</div>
-        <div class="band-label">🎸 Zen Garden Monks</div>
+  <!-- GAME 1: ZEN WORD -->
+  <div id="gameZen" class="game-container">
+    <div class="game-header">
+      <button class="back-btn" data-back="zen">⬅️ ARCADE MENU</button>
+      <div class="band-tag">🎸 Zen Garden Monks</div>
+    </div>
+    <div class="game-panel">
+      <div class="scrambled-letters" id="scrambledWord">????</div>
+      <div class="zen-input">
+        <input type="text" id="wordGuessInput" placeholder="type your word...">
+        <button id="submitGuess">PLAY</button>
       </div>
-      <div class="game-panel">
-        <div class="scrambled-letters" id="scrambledWord">????</div>
-        <div class="zen-input">
-          <input type="text" id="wordGuessInput" placeholder="type word...">
-          <button id="submitGuess">PLAY</button>
-        </div>
-        <div class="zen-score">
-          <span>🧘 Points: <strong id="zenScore">0</strong></span>
-          <span>🎋 Word #<span id="currentWordIndex">1</span>/<span id="totalWordsCount">0</span></span>
-        </div>
-        <div class="zen-feedback" id="zenFeedback">🌸 Unscramble the zen word.</div>
+      <div class="zen-score">
+        <span>🧘 Points: <strong id="zenScore">0</strong></span>
+        <span>🎋 Word #<span id="currentWordIndex">1</span>/<span id="totalWordsCount">0</span></span>
       </div>
+      <div id="zenFeedback" class="zen-feedback"></div>
       <button class="reset-btn" id="resetZenGame">⟳ NEW ZEN CYCLE</button>
     </div>
+  </div>
 
-    <!-- LEXICON MATCH -->
-    <div class="game-card">
-      <div class="band-header">
-        <div class="game-name">📖 LEXICON MATCH</div>
-        <div class="band-label">📚 The Lexicon Lords</div>
-      </div>
-      <div class="game-panel">
-        <div id="matchGrid" class="match-grid"></div>
-        <div id="matchStatus" class="status" style="margin-top:0;">✨ click a word, then its definition ✨</div>
-      </div>
+  <!-- GAME 2: LEXICON MATCH -->
+  <div id="gameLex" class="game-container">
+    <div class="game-header">
+      <button class="back-btn" data-back="lex">⬅️ ARCADE MENU</button>
+      <div class="band-tag">📚 Lexicon Lords</div>
+    </div>
+    <div class="game-panel">
+      <div id="matchGrid" class="match-grid"></div>
+      <div id="matchStatus" class="status" style="margin-top:0;">✨ click a word, then its definition ✨</div>
       <button class="reset-btn" id="resetMatchGame">⟳ NEW WORD SET</button>
     </div>
+  </div>
 
-    <!-- WORD COMPLETE -->
-    <div class="game-card">
-      <div class="band-header">
-        <div class="game-name">🔠 WORD COMPLETE</div>
-        <div class="band-label">🎤 The Vowel Vandals</div>
-      </div>
-      <div class="game-panel">
-        <div class="word-with-blanks" id="blankWord">_ _ _ _</div>
-        <div id="letterOptions" class="options-buttons"></div>
-        <div id="completeFeedback" class="zen-feedback"></div>
-        <div class="zen-score">
-          <span>🏆 Streak: <span id="completeStreak">0</span></span>
-          <span>🌟 Total: <span id="totalCorrect">0</span></span>
-        </div>
+  <!-- GAME 3: WORD COMPLETE -->
+  <div id="gameComplete" class="game-container">
+    <div class="game-header">
+      <button class="back-btn" data-back="complete">⬅️ ARCADE MENU</button>
+      <div class="band-tag">🎤 Vowel Vandals</div>
+    </div>
+    <div class="game-panel">
+      <div class="word-with-blanks" id="blankWord">_ _ _ _</div>
+      <div id="letterOptions" class="options-buttons"></div>
+      <div id="completeFeedback" class="zen-feedback"></div>
+      <div class="zen-score">
+        <span>🏆 Streak: <span id="completeStreak">0</span></span>
+        <span>🌟 Total: <span id="totalCorrect">0</span></span>
       </div>
       <button class="reset-btn" id="resetCompleteGame">⟳ NEW WORD BOOK</button>
     </div>
+  </div>
 
-    <!-- TIC TAC TOE -->
-    <div class="game-card">
-      <div class="band-header">
-        <div class="game-name">⚡ TIC TAC TOE</div>
-        <div class="band-label">🎤 The Tic-Tac-Tonics</div>
-      </div>
-      <div class="game-panel">
-        <div class="ttt-grid" id="tttGrid"></div>
-        <div class="status" id="tttStatus">🎵 Band Battle: X vs O</div>
-      </div>
+  <!-- GAME 4: TIC TAC TOE -->
+  <div id="gameTtt" class="game-container">
+    <div class="game-header">
+      <button class="back-btn" data-back="ttt">⬅️ ARCADE MENU</button>
+      <div class="band-tag">🎤 Tic-Tac-Tonics</div>
+    </div>
+    <div class="game-panel">
+      <div class="ttt-grid" id="tttGrid"></div>
+      <div id="tttStatus" class="status">🎵 Band Battle: X vs O</div>
       <button class="reset-btn" id="resetTtt">⟳ NEW RIFF</button>
     </div>
+  </div>
 
-    <!-- MEMORY MATCH (HARDER – random bands each reset) -->
-    <div class="game-card">
-      <div class="band-header">
-        <div class="game-name">🎶 MEMORY MATCH</div>
-        <div class="band-label">🎻 Memory Lane Orchestra (Infinite Variety)</div>
-      </div>
-      <div class="game-panel">
-        <div class="memory-grid" id="memoryGrid"></div>
-        <div class="memory-status" id="memoryStatus">🎵 Random 8 bands every shuffle!</div>
-      </div>
+  <!-- GAME 5: MEMORY MATCH -->
+  <div id="gameMemory" class="game-container">
+    <div class="game-header">
+      <button class="back-btn" data-back="memory">⬅️ ARCADE MENU</button>
+      <div class="band-tag">🎻 Memory Orchestra (Hard)</div>
+    </div>
+    <div class="game-panel">
+      <div class="memory-grid" id="memoryGrid"></div>
+      <div id="memoryStatus" class="status">🎵 Random 8 bands every shuffle!</div>
       <button class="reset-btn" id="resetMemory">⟳ ENCORE SHUFFLE</button>
     </div>
-
   </div>
 
   <footer>🎮 Reh Dogg Games Plus • Arcade Word Games • Band Board Jam 🎮</footer>
@@ -478,18 +441,11 @@
   // ---------- AUDIO ----------
   let audioCtx = null;
   let dangerMuted = false;
-
-  function initAudio() {
-    if (!audioCtx) {
-      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    }
-  }
-
+  function initAudio() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
   function playDangerSound() {
     if (dangerMuted) return;
     if (!audioCtx) initAudio();
     if (audioCtx.state === 'suspended') audioCtx.resume();
-    const now = audioCtx.currentTime;
     const osc = audioCtx.createOscillator();
     const gain = audioCtx.createGain();
     osc.connect(gain);
@@ -498,16 +454,15 @@
     osc.frequency.value = 880;
     gain.gain.value = 0.3;
     osc.start();
-    gain.gain.exponentialRampToValueAtTime(0.00001, now + 0.5);
-    osc.stop(now + 0.5);
+    gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + 0.5);
+    osc.stop(audioCtx.currentTime + 0.5);
   }
-
   document.getElementById('muteDangerBtn').addEventListener('click', () => {
     dangerMuted = !dangerMuted;
     document.getElementById('muteDangerBtn').innerText = dangerMuted ? '🔇 Danger OFF' : '🔊 Danger ON';
   });
 
-  // ---------- ZEN WORD (32 words, unchanged) ----------
+  // ---------- ZEN WORD (32 words) ----------
   const zenWordBank = [
     { word: "ZENITH", hint: "peak of calmness" }, { word: "MINDFUL", hint: "aware, present" },
     { word: "SERENE", hint: "tranquil" }, { word: "BREATHE", hint: "inhale, relax" },
@@ -529,7 +484,7 @@
   let currentZenIndex = 0, zenScore = 0, currentAnswer = "";
   function scrambleWord(w) {
     let a = w.split('');
-    for (let i = a.length - 1; i > 0; i--) { let j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+    for (let i = a.length-1; i>0; i--) { let j = Math.floor(Math.random()*(i+1)); [a[i], a[j]] = [a[j], a[i]]; }
     let s = a.join('');
     if (s === w && w.length > 2) { let t = s.split(''); [t[0], t[1]] = [t[1], t[0]]; s = t.join(''); }
     return s.toUpperCase();
@@ -557,7 +512,7 @@
   }
   function resetZenGame() { zenScore = 0; currentZenIndex = 0; updateZenScore(); loadZenWord(); }
 
-  // ---------- LEXICON MATCH ----------
+  // ---------- LEXICON MATCH (30 pairs) ----------
   const matchPairs = [
     { word: "Eloquent", def: "Fluent & persuasive" }, { word: "Mellifluous", def: "Sweet-sounding" },
     { word: "Resilient", def: "Recovers quickly" }, { word: "Luminous", def: "Emitting light" },
@@ -611,7 +566,7 @@
   }
   function resetMatch() { matchDeck = buildMatchDeck(); selectedMatchId = null; matchComplete = false; renderMatch(); }
 
-  // ---------- WORD COMPLETE ----------
+  // ---------- WORD COMPLETE (27 blanks) ----------
   const wordBook = [
     { blanked: "H_RM_NY", answer: "AO" }, { blanked: "CL_R_TY", answer: "AI" }, { blanked: "RHY_HM", answer: "T" },
     { blanked: "S_R_NE", answer: "EE" }, { blanked: "BREA_HE", answer: "T" }, { blanked: "AQU_R_UM", answer: "AI" },
@@ -671,8 +626,7 @@
   }
   function resetTTT() { tttBoard = ["","","","","","","","",""]; tttPlayer = "X"; tttActive = true; renderTTT(); }
 
-  // ---------- MEMORY MATCH (HARD & VARIABLE) ----------
-  // Master list of 20 different bands – each reset picks 8 random ones
+  // ---------- MEMORY MATCH (random 8 from 20) ----------
   const masterBandList = [
     "🎸 REH DOGG", "⚡ SUDS CREW", "🌴 ISLAND JAM", "🎤 MIC KINGS",
     "🥁 BEAT KEEPERS", "🎹 KEY MASTERS", "🪘 JUNGLE RHYTHM", "🎧 MIDNIGHT GROOVE",
@@ -680,57 +634,38 @@
     "🎸 RHYTHM REBELS", "🥁 CYBER BEATS", "🎤 VOCAL VIPERS", "🎹 PIANO PUNKS",
     "🪕 BANJO BLAZE", "🎸 GLITCH GUITARS", "🎺 TRUMPET TITANS", "🎧 DREAM DRIFTERS"
   ];
-
   let memCards = [], memFlipped = [], memLock = false, memMatched = 0;
-  let currentMemoryPairs = []; // store the 8 chosen bands for this session
-
+  let currentMemPairs = [];
   function getRandomBands(count) {
-    // shuffle master list and take first 'count'
     const shuffled = [...masterBandList];
-    for (let i = shuffled.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-    }
-    return shuffled.slice(0, count);
+    for (let i=shuffled.length-1; i>0; i--) { let j=Math.floor(Math.random()*(i+1)); [shuffled[i],shuffled[j]]=[shuffled[j],shuffled[i]]; }
+    return shuffled.slice(0,count);
   }
-
   function initMemory() {
-    // pick 8 random bands from master list
-    currentMemoryPairs = getRandomBands(8);
-    // build deck: each band appears twice
+    currentMemPairs = getRandomBands(8);
     let deck = [];
-    currentMemoryPairs.forEach((band, idx) => {
+    currentMemPairs.forEach((band, idx) => {
       deck.push({ name: band, id: idx, matched: false, flipped: false });
       deck.push({ name: band, id: idx, matched: false, flipped: false });
     });
-    // shuffle deck
-    for (let i = deck.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [deck[i], deck[j]] = [deck[j], deck[i]];
-    }
-    memCards = deck;
-    memFlipped = [];
-    memLock = false;
-    memMatched = 0;
+    for (let i=deck.length-1; i>0; i--) { let j=Math.floor(Math.random()*(i+1)); [deck[i],deck[j]]=[deck[j],deck[i]]; }
+    memCards = deck; memFlipped = []; memLock = false; memMatched = 0;
     renderMemory();
   }
-
   function renderMemory() {
     let grid = document.getElementById("memoryGrid");
     grid.innerHTML = "";
     memCards.forEach((card, idx) => {
-      let div = document.createElement("div");
-      div.className = "memory-card";
+      let div = document.createElement("div"); div.className = "memory-card";
       if (card.flipped || card.matched) div.classList.add("flipped");
       if (card.matched) div.classList.add("matched");
       div.innerText = (card.flipped || card.matched) ? card.name : "? ? ?";
       div.onclick = () => memoryClick(idx);
       grid.appendChild(div);
     });
-    document.getElementById("memoryStatus").innerHTML = `🎵 Random 8 bands this round! Matched ${memMatched}/8 pairs.`;
+    document.getElementById("memoryStatus").innerHTML = `🎵 Matched ${memMatched}/8 pairs (random bands!)`;
     if (memMatched === 8) document.getElementById("memoryStatus").innerHTML = "🏆 PERFECT! New bands next shuffle!";
   }
-
   function memoryClick(idx) {
     if (memLock) return;
     let card = memCards[idx];
@@ -742,41 +677,66 @@
       memLock = true;
       let i1 = memFlipped[0], i2 = memFlipped[1];
       if (memCards[i1].id === memCards[i2].id) {
-        memCards[i1].matched = true;
-        memCards[i2].matched = true;
-        memMatched++;
-        memFlipped = [];
-        memLock = false;
-        renderMemory();
+        memCards[i1].matched = true; memCards[i2].matched = true;
+        memMatched++; memFlipped = []; memLock = false; renderMemory();
       } else {
-        playDangerSound();  // wrong pair
+        playDangerSound();
         setTimeout(() => {
-          memCards[i1].flipped = false;
-          memCards[i2].flipped = false;
-          memFlipped = [];
-          memLock = false;
-          renderMemory();
+          memCards[i1].flipped = false; memCards[i2].flipped = false;
+          memFlipped = []; memLock = false; renderMemory();
         }, 800);
       }
     }
   }
 
-  // ---------- INITIALIZE ALL 5 GAMES ----------
-  document.addEventListener("DOMContentLoaded", () => {
-    loadZenWord(); updateZenScore();
-    document.getElementById("submitGuess").addEventListener("click", handleGuess);
-    document.getElementById("resetZenGame").addEventListener("click", resetZenGame);
-    document.getElementById("wordGuessInput").addEventListener("keypress", e => { if(e.key === "Enter") handleGuess(); });
-
-    matchDeck = buildMatchDeck(); renderMatch();
-    document.getElementById("resetMatchGame").addEventListener("click", resetMatch);
-
-    loadComplete(); document.getElementById("resetCompleteGame").addEventListener("click", resetComplete);
-
-    renderTTT(); document.getElementById("resetTtt").addEventListener("click", resetTTT);
-
-    initMemory(); document.getElementById("resetMemory").addEventListener("click", initMemory);
+  // ---------- ARCADE NAVIGATION ----------
+  const startup = document.getElementById("startupScreen");
+  const gameContainers = {
+    zen: document.getElementById("gameZen"),
+    lex: document.getElementById("gameLex"),
+    complete: document.getElementById("gameComplete"),
+    ttt: document.getElementById("gameTtt"),
+    memory: document.getElementById("gameMemory")
+  };
+  function showGame(gameId) {
+    startup.style.display = "none";
+    for (let id in gameContainers) gameContainers[id].style.display = "none";
+    gameContainers[gameId].style.display = "block";
+  }
+  function showStartup() {
+    startup.style.display = "block";
+    for (let id in gameContainers) gameContainers[id].style.display = "none";
+  }
+  document.querySelectorAll(".arcade-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      let game = btn.getAttribute("data-game");
+      if (game === "zen") showGame("zen");
+      if (game === "lex") showGame("lex");
+      if (game === "complete") showGame("complete");
+      if (game === "ttt") showGame("ttt");
+      if (game === "memory") showGame("memory");
+    });
   });
+  document.querySelectorAll(".back-btn").forEach(btn => {
+    btn.addEventListener("click", () => showStartup());
+  });
+
+  // ---------- INITIALIZE ALL GAMES (but they start hidden) ----------
+  loadZenWord(); updateZenScore();
+  document.getElementById("submitGuess").addEventListener("click", handleGuess);
+  document.getElementById("resetZenGame").addEventListener("click", resetZenGame);
+  document.getElementById("wordGuessInput").addEventListener("keypress", e => { if(e.key === "Enter") handleGuess(); });
+
+  matchDeck = buildMatchDeck(); renderMatch();
+  document.getElementById("resetMatchGame").addEventListener("click", resetMatch);
+
+  loadComplete(); document.getElementById("resetCompleteGame").addEventListener("click", resetComplete);
+
+  renderTTT(); document.getElementById("resetTtt").addEventListener("click", resetTTT);
+
+  initMemory(); document.getElementById("resetMemory").addEventListener("click", initMemory);
+
+  showStartup();
 
   document.body.addEventListener('click', () => { initAudio(); }, { once: true });
 </script>
